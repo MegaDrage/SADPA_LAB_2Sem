@@ -1,132 +1,202 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <math.h>
-#include <iostream>
-#include <string.h>
+
 struct spis
 {
+    spis *next;
     int data;
-    struct spis* next;
 };
 
-
-void fillinc(struct spis* A, struct spis* head)
+spis *Spis_inc_queue(int n)
 {
-    int i = 0;
-    for (A = head -> next; A; A = A -> next, i++)
+    spis *p = NULL, *head = NULL, *tail = NULL;
+    int i, S;
+    for (i = 0; i < n; i++)
     {
-        A -> data = 1 + i;
-    }
-}
-void filldec(struct spis* A, struct spis* head, int size)
-{
-    int flag = 0;
-    for (A = head -> next; flag < size, A; flag++, A = A -> next)
-    {
-        A -> data = size - 1 - flag + 1;
-    }
-}
-
-void fillrand(struct spis* A, struct spis* head)
-{
-    for (A = head -> next; A; A = A -> next)
-    {
-        A -> data = rand()%100;
-    }
-}
-int checksum(struct spis* A, struct spis* head)
-{
-    int sum = 0;
-    for (A = head -> next; A; A = A -> next)
-    {
-        sum += A -> data;
-    }
-    return sum;
-}
-int runnumber(struct spis* A, struct spis* head)
-{
-    int seria = 0;
-    for (A = head -> next; A -> next; A = A -> next)
-    {
-        if (A -> data > A -> next -> data)
+        S = i;
+        p = new spis;
+        p->data = S;
+        p->next = NULL;
+        if (head != NULL)
+            tail->next = p;
+        else
         {
-            seria++;
+            head = p;
         }
- 
+        tail = p;
     }
-    return seria+1;
+    return head;
 }
-void printspis(struct spis* A, struct spis* head)
+
+spis *Spis_dec_queue(int n)
 {
-    int flag = 0;
-    for (A = head -> next; A; A = A -> next, flag++)
+    spis *p = NULL, *head = NULL, *tail = NULL;
+    int i, S;
+    for (i = 0; i < n; i++)
     {
-        printf("%i ", A -> data);
+        S = n - i;
+        p = new spis;
+        p->data = S;
+        p->next = NULL;
+        if (head != NULL)
+            tail->next = p;
+        else
+        {
+            head = p;
+        }
+        tail = p;
     }
+    return head;
+}
+
+spis *Spis_rand_queue(int n)
+{
+    spis *p = NULL, *head = NULL, *tail = NULL;
+    int i, S;
+    for (i = 0; i < n; i++)
+    {
+        S = rand() % 100;
+        p = new spis;
+        p->data = S;
+        p->next = NULL;
+        if (head != NULL)
+            tail->next = p;
+        else
+        {
+            head = p;
+        }
+        tail = p;
+    }
+    return head;
+}
+
+spis *Spis_inc_stack(int n)
+{
+    spis *p = NULL, *head = NULL;
+    int i, S;
+    for (i = 0; i < n; i++)
+    {
+        S = n - i;
+        p = new spis;
+        p->data = S;    // выделение памяти по адресу p
+        p->next = head; // добавление элемента
+        head = p;       // в начало стека
+    }
+    return head;
+}
+
+spis *Spis_dec_stack(int n)
+{
+    spis *p = NULL, *head = NULL;
+    int i, S;
+    for (i = 0; i < n; i++)
+    {
+        S = i;
+        p = new spis;
+        p->data = S;
+        p->next = head;
+        head = p;
+    }
+    return head;
+}
+
+spis *Spis_rand_stack(int n)
+{
+    spis *p = NULL, *head = NULL;
+    int i, S;
+    for (i = 0; i < n; i++)
+    {
+        S = rand() % 100;
+        p = new spis;
+        p->data = S;
+        p->next = head;
+        head = p;
+    }
+    return head;
+}
+
+void PrintSpis(spis *head)
+{
+    spis *p;
+    printf("\n");
+    for (p = head; p; p = p->next)
+        printf("%d ", p->data);
     printf("\n");
 }
 
-void deletespis(struct spis* A, struct spis* head, struct spis* pp)
+int Sum(spis *head)
 {
-    for (A = head; A; A = pp)
-    {
-        pp = A -> next;
-        delete(A);
-    }
+    int S = 0;
+    spis *p;
+    for (p = head; p; p = p->next)
+        S += p->data;
+    return S;
 }
 
-void create_stack(struct spis* A, struct spis* head, int size)
+int Seriya(spis *head)
 {
-    int i = 0;
-    do
-    {
-        A = new spis;
-        A -> next = head -> next;
-        head -> next = A;
-        i++;
-    } while (i < size);
+    int S = 0;
+    spis *p;
+    if (head == NULL)
+        return 0;
+    for (p = head; p->next; p = p->next)
+        if (p->data > p->next->data)
+            S++;
+    return S + 1;
 }
 
-void create_order(struct spis* A, struct spis* head, int size, struct spis* tail)
+spis *delit_Spis(spis *head)
 {
-    int i = 0;
-    for (A = head -> next; i < size; i++, A = A -> next)
+    spis *p;
+    if (head != NULL)
     {
-        A = new spis;
-        tail -> next = A;
-        tail = A;
+        for (p = head; p; p = p->next)
+        {
+            head = p->next;
+            delete p;
+        }
     }
-    tail -> next = NULL;
+    return head;
 }
 
 int main()
 {
-    srand(time(NULL));
-    struct spis *head,*p, *tail, *pp;
-    head = tail = new spis;
-    int n = 10;
-    //Order
-    create_order(p, head, n, tail);
-    fillinc(p, head);    
-    printspis(p, head);
-    filldec(p, head, n);
-    printspis(p , head);
-    fillrand(p, head);
-    printspis(p, head);
-    printf("Control Sum: %i\n", checksum(p, head));
-    printf("Seria: %i\n", runnumber(p, head));
-    deletespis(p, head, pp);
-    //Stack
-    /*create_stack(p, head, n);
-    fillinc(p, head);    
-    printspis(p, head);
-    filldec(p, head, n);
-    printspis(p , head);
-    fillrand(p, head);
-    printspis(p, head);
-    printf("Control Sum: %i\n", checksum(p, head));
-    printf("Seria: %i\n", runnumber(p, head));
-    deletespis(p, head, pp);*/
-    return 0;
+    struct spis *i;
+    struct spis *d;
+    struct spis *r;
+    printf("Enter n: ");
+    int n;
+    scanf("%d", &n);
+    printf("Inc");
+    i = Spis_inc_stack(n);
+    PrintSpis(i);
+    printf("sum: %d | series: %d\n", Sum(i), Seriya(i));
+
+    printf("Dec");
+    d = Spis_dec_stack(n);
+    PrintSpis(d);
+    printf("sum: %d | series: %d\n", Sum(d), Seriya(d));
+
+    printf("rand");
+    r = Spis_rand_stack(n);
+    PrintSpis(r);
+    printf("sum: %d | series: %d\n", Sum(r), Seriya(r));
+
+    printf("\nQueue");
+    i = Spis_inc_queue(n);
+    PrintSpis(i);
+    printf("sum: %d | series: %d\n", Sum(i), Seriya(i));
+
+    printf("Dec");
+    d = Spis_dec_queue(n);
+    PrintSpis(d);
+    printf("sum: %d | series: %d\n", Sum(d), Seriya(d));
+
+    printf("rand");
+    r = Spis_rand_queue(n);
+    PrintSpis(r);
+    printf("sum: %d | series: %d\n", Sum(r), Seriya(r));
+    r = delit_Spis(r);
+    printf("Deleted spis");
+    PrintSpis(r);
 }
